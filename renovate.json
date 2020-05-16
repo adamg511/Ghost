@@ -4,21 +4,23 @@
     "@tryghost:groupTestLint",
     "@tryghost:groupCSS",
     "@tryghost:groupBuildTools",
-    "@tryghost:automergeSilentTestLintNonMajor"
+    "@tryghost:automergeSilentTestLintNonMajor",
+    "@tryghost:automergePatchBranch"
   ],
-  "travis": { "enabled": true },
-  "node": {
-    "supportPolicy": ["lts"]
-   },
-  "separateMinorPatch": true,
-  "patch": {
-    "automerge": true
-  },
   "ignoreDeps": [
+      "got",
+      "intl-messageformat",
       "moment-timezone",
       "nodemailer",
+      "tmp",
       "validator",
       "simple-dom"
     ],
-  "ignorePaths": ["core/test"]
+  "ignorePaths": ["test"],
+  "packageRules": [
+    {
+      "packagePatterns": [ "metascraper" ],
+      "groupName": "metascraper"
+    }
+  ]
 }

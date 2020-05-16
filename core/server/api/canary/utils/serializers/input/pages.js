@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const debug = require('ghost-ignition').debug('api:canary:utils:serializers:input:pages');
 const mapNQLKeyValues = require('../../../../../../shared/nql-map-key-values');
-const converters = require('../../../../../lib/mobiledoc/converters');
+const mobiledoc = require('../../../../../lib/mobiledoc');
 const url = require('./utils/url');
 const localUtils = require('../../index');
 const postsMetaSchema = require('../../../../../data/schema').tables.posts_meta;
@@ -53,6 +53,12 @@ function setDefaultOrder(frame) {
     }
 }
 
+function forceVisibilityColumn(frame) {
+    if (frame.options.columns && !frame.options.columns.includes('visibility')) {
+        frame.options.columns.push('visibility');
+    }
+}
+
 function defaultFormat(frame) {
     if (frame.options.formats) {
         return;
@@ -100,6 +106,7 @@ module.exports = {
         if (localUtils.isContentAPI(frame)) {
             removeMobiledocFormat(frame);
             setDefaultOrder(frame);
+            forceVisibilityColumn(frame);
         }
 
         if (!localUtils.isContentAPI(frame)) {
@@ -119,6 +126,7 @@ module.exports = {
         if (localUtils.isContentAPI(frame)) {
             removeMobiledocFormat(frame);
             setDefaultOrder(frame);
+            forceVisibilityColumn(frame);
         }
 
         if (!localUtils.isContentAPI(frame)) {
@@ -135,7 +143,7 @@ module.exports = {
             const html = frame.data.pages[0].html;
 
             if (frame.options.source === 'html' && !_.isEmpty(html)) {
-                frame.data.pages[0].mobiledoc = JSON.stringify(converters.htmlToMobiledocConverter(html));
+                frame.data.pages[0].mobiledoc = JSON.stringify(mobiledoc.htmlToMobiledocConverter(html));
             }
         }
 

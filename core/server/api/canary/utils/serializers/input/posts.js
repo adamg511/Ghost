@@ -3,7 +3,7 @@ const debug = require('ghost-ignition').debug('api:canary:utils:serializers:inpu
 const mapNQLKeyValues = require('../../../../../../shared/nql-map-key-values');
 const url = require('./utils/url');
 const localUtils = require('../../index');
-const converters = require('../../../../../lib/mobiledoc/converters');
+const mobiledoc = require('../../../../../lib/mobiledoc');
 const postsMetaSchema = require('../../../../../data/schema').tables.posts_meta;
 
 const replacePageWithType = mapNQLKeyValues({
@@ -50,6 +50,12 @@ function setDefaultOrder(frame) {
 
     if (!frame.options.order && !includesOrderedRelations) {
         frame.options.order = 'published_at desc';
+    }
+}
+
+function forceVisibilityColumn(frame) {
+    if (frame.options.columns && !frame.options.columns.includes('visibility')) {
+        frame.options.columns.push('visibility');
     }
 }
 
@@ -108,6 +114,7 @@ module.exports = {
             removeMobiledocFormat(frame);
 
             setDefaultOrder(frame);
+            forceVisibilityColumn(frame);
         }
 
         if (!localUtils.isContentAPI(frame)) {
@@ -135,6 +142,7 @@ module.exports = {
             removeMobiledocFormat(frame);
 
             setDefaultOrder(frame);
+            forceVisibilityColumn(frame);
         }
 
         if (!localUtils.isContentAPI(frame)) {
@@ -151,7 +159,7 @@ module.exports = {
             const html = frame.data.posts[0].html;
 
             if (frame.options.source === 'html' && !_.isEmpty(html)) {
-                frame.data.posts[0].mobiledoc = JSON.stringify(converters.htmlToMobiledocConverter(html));
+                frame.data.posts[0].mobiledoc = JSON.stringify(mobiledoc.htmlToMobiledocConverter(html));
             }
         }
 

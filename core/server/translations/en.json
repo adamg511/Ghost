@@ -12,6 +12,7 @@
                 "sampleBlogDescription": "Thoughts, stories and ideas.",
                 "mail": {
                     "resetPassword": "Reset Password",
+                    "resetPasswordRequired": "Reset Password",
                     "checkEmailForInstructions": "Check your email for further instructions.",
                     "passwordChanged": "Password changed successfully.",
                     "invitationAccepted": "Invitation accepted.",
@@ -34,18 +35,6 @@
         }
     },
     "errors": {
-        "apps": {
-            "appWillNotBeLoaded": {
-                "error": "The app will not be loaded",
-                "help": "Check with the app creator, or read the app documentation for more details on app requirements"
-            },
-            "noActivateMethodLoadingApp": {
-                "error": "Error loading app named {name}; no activate() method defined."
-            },
-            "mustProvideAppName": {
-                "error": "Must provide an app name for api context"
-            }
-        },
         "middleware": {
             "api": {
                 "versionMismatch": "Client request for {clientVersion} does not match server version {serverVersion}."
@@ -239,7 +228,6 @@
                     "help": "Visit and save your profile after logging in to check for problems."
                 },
                 "incorrectPassword": "Your password is incorrect.",
-                "accountLocked": "Your account is locked. Please reset your password to log in again by clicking the \"Forgotten password?\" link!",
                 "accountSuspended": "Your account was suspended.",
                 "newPasswordsDoNotMatch": "Your new passwords do not match",
                 "passwordRequiredForOperation": "Password is required for this operation",
@@ -383,6 +371,9 @@
             },
             "tags": {
                 "tagNotFound": "Tag not found."
+            },
+            "labels": {
+                "labelNotFound": "Label not found."
             },
             "themes": {
                 "noPermissionToBrowseThemes": "You do not have permission to browse themes.",
@@ -606,6 +597,10 @@
             },
             "plural": {
                 "valuesMustBeDefined": "All values must be defined for empty, singular and plural"
+            },
+            "price": {
+                "attrIsRequired": "Attribute is required e.g. \\{\\{price plan.amount\\}\\}",
+                "attrMustBeNumeric": "Attribute value should be a number"
             },
             "img_url": {
                 "attrIsRequired": "Attribute is required e.g. \\{\\{img_url feature_image\\}\\}",

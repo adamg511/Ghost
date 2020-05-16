@@ -1,16 +1,16 @@
 // # Local File System Image Storage module
 // The (default) module for storing images, using the local file system
+const serveStatic = require('../../../shared/express').static;
 
-const serveStatic = require('express').static,
-    fs = require('fs-extra'),
-    path = require('path'),
-    Promise = require('bluebird'),
-    moment = require('moment'),
-    config = require('../../config'),
-    common = require('../../lib/common'),
-    constants = require('../../lib/constants'),
-    urlUtils = require('../../lib/url-utils'),
-    StorageBase = require('ghost-storage-base');
+const fs = require('fs-extra');
+const path = require('path');
+const Promise = require('bluebird');
+const moment = require('moment');
+const config = require('../../config');
+const common = require('../../lib/common');
+const constants = require('../../lib/constants');
+const urlUtils = require('../../lib/url-utils');
+const StorageBase = require('ghost-storage-base');
 
 class LocalFileStore extends StorageBase {
     constructor() {
@@ -164,11 +164,19 @@ class LocalFileStore extends StorageBase {
         return new Promise((resolve, reject) => {
             fs.readFile(targetPath, (err, bytes) => {
                 if (err) {
-                    if (err.code === 'ENOENT') {
+                    if (err.code === 'ENOENT' || err.code === 'ENOTDIR') {
                         return reject(new common.errors.NotFoundError({
                             err: err,
                             message: common.i18n.t('errors.errors.imageNotFoundWithRef', {img: options.path})
                         }));
+                    }
+
+                    if (err.code === 'ENAMETOOLONG') {
+                        return reject(new common.errors.BadRequestError({err: err}));
+                    }
+
+                    if (err.code === 'EACCES') {
+                        return reject(new common.errors.NoPermissionError({err: err}));
                     }
 
                     return reject(new common.errors.GhostError({

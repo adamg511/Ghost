@@ -1,10 +1,10 @@
-var config = require('../../server/config'),
-    escapeExpression = require('../services/themes/engine').escapeExpression,
-    socialUrls = require('@tryghost/social-urls'),
-    _ = require('lodash');
+const config = require('../../server/config');
+const escapeExpression = require('../services/themes/engine').escapeExpression;
+const socialUrls = require('@tryghost/social-urls');
+const _ = require('lodash');
 
 function schemaImageObject(metaDataVal) {
-    var imageObject;
+    let imageObject;
     if (!metaDataVal) {
         return null;
     }
@@ -22,9 +22,22 @@ function schemaImageObject(metaDataVal) {
     return imageObject;
 }
 
+function schemaPublisherObject(metaDataVal) {
+    let publisherObject;
+
+    publisherObject = {
+        '@type': 'Organization',
+        name: escapeExpression(metaDataVal.site.title),
+        url: metaDataVal.site.url || null,
+        logo: schemaImageObject(metaDataVal.site.logo) || null
+    };
+
+    return publisherObject;
+}
+
 // Creates the final schema object with values that are not null
 function trimSchema(schema) {
-    var schemaObject = {};
+    const schemaObject = {};
 
     _.each(schema, function (value, key) {
         if (value !== null && typeof value !== 'undefined') {
@@ -36,7 +49,7 @@ function trimSchema(schema) {
 }
 
 function trimSameAs(data, context) {
-    var sameAs = [];
+    const sameAs = [];
 
     if (context === 'post' || context === 'page') {
         if (data[context].primary_author.website) {
@@ -66,19 +79,16 @@ function trimSameAs(data, context) {
 function getPostSchema(metaData, data) {
     // CASE: metaData.excerpt for post context is populated by either the custom excerpt, the meta description,
     // or the automated excerpt of 50 words. It is empty for any other context.
-    var description = metaData.excerpt ? escapeExpression(metaData.excerpt) : null,
-        schema;
+    const description = metaData.excerpt ? escapeExpression(metaData.excerpt) : null;
+
+    let schema;
 
     const context = data.page ? 'page' : 'post';
 
     schema = {
         '@context': 'https://schema.org',
         '@type': 'Article',
-        publisher: {
-            '@type': 'Organization',
-            name: escapeExpression(metaData.site.title),
-            logo: schemaImageObject(metaData.site.logo) || null
-        },
+        publisher: schemaPublisherObject(metaData),
         author: {
             '@type': 'Person',
             name: escapeExpression(data[context].primary_author.name),
@@ -107,14 +117,10 @@ function getPostSchema(metaData, data) {
 }
 
 function getHomeSchema(metaData) {
-    var schema = {
+    const schema = {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
-        publisher: {
-            '@type': 'Organization',
-            name: escapeExpression(metaData.site.title),
-            logo: schemaImageObject(metaData.site.logo) || null
-        },
+        publisher: schemaPublisherObject(metaData),
         url: metaData.url,
         image: schemaImageObject(metaData.coverImage),
         mainEntityOfPage: {
@@ -129,14 +135,10 @@ function getHomeSchema(metaData) {
 }
 
 function getTagSchema(metaData, data) {
-    var schema = {
+    const schema = {
         '@context': 'https://schema.org',
         '@type': 'Series',
-        publisher: {
-            '@type': 'Organization',
-            name: escapeExpression(metaData.site.title),
-            logo: schemaImageObject(metaData.site.logo) || null
-        },
+        publisher: schemaPublisherObject(metaData),
         url: metaData.url,
         image: schemaImageObject(metaData.coverImage),
         name: data.tag.name,
@@ -153,7 +155,7 @@ function getTagSchema(metaData, data) {
 }
 
 function getAuthorSchema(metaData, data) {
-    var schema = {
+    const schema = {
         '@context': 'https://schema.org',
         '@type': 'Person',
         sameAs: trimSameAs(data, 'author'),
@@ -174,7 +176,7 @@ function getAuthorSchema(metaData, data) {
 
 function getSchema(metaData, data) {
     if (!config.isPrivacyDisabled('useStructuredData')) {
-        var context = data.context ? data.context : null;
+        const context = data.context ? data.context : null;
         if (_.includes(context, 'post') || _.includes(context, 'page') || _.includes(context, 'amp')) {
             return getPostSchema(metaData, data);
         } else if (_.includes(context, 'home')) {

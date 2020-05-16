@@ -142,6 +142,23 @@ const mapAction = (model, frame) => {
 
 const mapMember = (model, frame) => {
     const jsonModel = model.toJSON ? model.toJSON(frame.options) : model;
+
+    if (_.get(jsonModel, 'stripe.subscriptions')) {
+        let compedSubscriptions = _.get(jsonModel, 'stripe.subscriptions').filter(sub => (sub.plan.nickname === 'Complimentary'));
+        const hasCompedSubscription = !!(compedSubscriptions.length);
+
+        // NOTE: `frame.options.fields` has to be taken into account in the same way as for `stripe.subscriptions`
+        //       at the moment of implementation fields were not fully supported by members endpoints
+        Object.assign(jsonModel, {
+            comped: hasCompedSubscription
+        });
+    }
+
+    return jsonModel;
+};
+
+const mapLabel = (model, frame) => {
+    const jsonModel = model.toJSON ? model.toJSON(frame.options) : model;
     return jsonModel;
 };
 
@@ -149,6 +166,7 @@ module.exports.mapPost = mapPost;
 module.exports.mapPage = mapPage;
 module.exports.mapUser = mapUser;
 module.exports.mapTag = mapTag;
+module.exports.mapLabel = mapLabel;
 module.exports.mapIntegration = mapIntegration;
 module.exports.mapSettings = mapSettings;
 module.exports.mapImage = mapImage;

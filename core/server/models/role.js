@@ -1,10 +1,9 @@
-var _ = require('lodash'),
-    ghostBookshelf = require('./base'),
-    Promise = require('bluebird'),
-    common = require('../lib/common'),
-
-    Role,
-    Roles;
+const _ = require('lodash');
+const ghostBookshelf = require('./base');
+const Promise = require('bluebird');
+const common = require('../lib/common');
+let Role;
+let Roles;
 
 Role = ghostBookshelf.Model.extend({
 
@@ -34,14 +33,14 @@ Role = ghostBookshelf.Model.extend({
      * @return {Array} Keys allowed in the `options` hash of the model's method.
      */
     permittedOptions: function permittedOptions(methodName) {
-        var options = ghostBookshelf.Model.permittedOptions.call(this, methodName),
+        let options = ghostBookshelf.Model.permittedOptions.call(this, methodName);
 
-            // whitelists for the `options` hash argument on methods, by method name.
-            // these are the only options that can be passed to Bookshelf / Knex.
-            validOptions = {
-                findOne: ['withRelated'],
-                findAll: ['withRelated']
-            };
+        // whitelists for the `options` hash argument on methods, by method name.
+        // these are the only options that can be passed to Bookshelf / Knex.
+        const validOptions = {
+            findOne: ['withRelated'],
+            findAll: ['withRelated']
+        };
 
         if (validOptions[methodName]) {
             options = options.concat(validOptions[methodName]);
@@ -50,7 +49,7 @@ Role = ghostBookshelf.Model.extend({
         return options;
     },
 
-    permissible: function permissible(roleModelOrId, action, context, unsafeAttrs, loadedPermissions, hasUserPermission, hasAppPermission, hasApiKeyPermission) {
+    permissible: function permissible(roleModelOrId, action, context, unsafeAttrs, loadedPermissions, hasUserPermission, hasApiKeyPermission) {
         // If we passed in an id instead of a model, get the model
         // then check the permissions
         if (_.isNumber(roleModelOrId) || _.isString(roleModelOrId)) {
@@ -95,7 +94,7 @@ Role = ghostBookshelf.Model.extend({
             }
         }
 
-        if (hasUserPermission && hasAppPermission && hasApiKeyPermission) {
+        if (hasUserPermission && hasApiKeyPermission) {
             return Promise.resolve();
         }
 

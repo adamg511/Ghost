@@ -1,6 +1,6 @@
 const debug = require('ghost-ignition').debug('web:admin:app');
-const express = require('express');
-const serveStatic = require('express').static;
+const express = require('../../../shared/express');
+const serveStatic = express.static;
 const config = require('../../config');
 const constants = require('../../lib/constants');
 const urlUtils = require('../../lib/url-utils');
@@ -9,11 +9,7 @@ const adminMiddleware = require('./middleware');
 
 module.exports = function setupAdminApp() {
     debug('Admin setup start');
-    const adminApp = express();
-
-    // Make sure 'req.secure' and `req.hostname` is valid for proxied requests
-    // (X-Forwarded-Proto header will be checked, if present)
-    adminApp.enable('trust proxy');
+    const adminApp = express('admin');
 
     // Admin assets
     // @TODO ensure this gets a local 404 error handler
@@ -35,7 +31,7 @@ module.exports = function setupAdminApp() {
 
     // Force SSL if required
     // must happen AFTER asset loading and BEFORE routing
-    adminApp.use(shared.middlewares.urlRedirects.adminRedirect);
+    adminApp.use(shared.middlewares.urlRedirects.adminSSLAndHostRedirect);
 
     // Add in all trailing slashes & remove uppercase
     // must happen AFTER asset loading and BEFORE routing
